@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Freelancer.Models;
 
 namespace Freelancer.Data
 {
@@ -9,5 +10,7 @@ namespace Freelancer.Data
             : base(options)
         {
         }
+        public DbSet<Freelancer.Models.User>? User { get; set; }
+        public DbSet<Freelancer.Models.Jobs>? Job { get; set; }
     }
 }
