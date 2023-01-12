@@ -4,15 +4,13 @@
     ViewData["Title"] = "Index";
     @using Microsoft.AspNetCore.Identity
     @inject SignInManager<IdentityUser> SignInManager
-    @inject UserManager<IdentityUser> UserManager
+@inject UserManager<IdentityUser> UserManager
 }
-@if(SignInManager.IsSignedIn(User))
+@if (SignInManager.IsSignedIn(User))
 {
-    <h1>Jobs Manager</h1>
 
-    <p>
-        <a asp-action="Create">Create New</a>
-    </p>
+
+    <h1>Jobs</h1>
     <table class="table">
         <thead>
             <tr>
@@ -42,9 +40,8 @@
                         @Html.DisplayFor(modelItem => item.CreatedDate)
                     </td>
                     <td>
-                        <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
                         <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                        <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                        <a asp-action="Accept" asp-route-id="@item.Id">Accept</a>
                     </td>
                 </tr>
             }
@@ -57,4 +54,3 @@ else
     <a class="btn btn-primary" asp-area="Identity" asp-page="/Account/Register">Register</a>
     <a class="btn btn-secondary" asp-area="Identity" asp-page="/Account/Login">Login</a>
 }
-
