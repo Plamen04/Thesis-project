@@ -10,7 +10,7 @@ namespace Freelancer.Data
             : base(options)
         {
         }
-        public DbSet<Freelancer.Models.User>? User { get; set; }
-        public DbSet<Freelancer.Models.Jobs>? Job { get; set; }
+        public DbSet<Job>? Job { get; set; }
+        public DbSet<JobType> jobTypes { get; set; }
     }
 }

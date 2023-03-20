@@ -1,9 +1,9 @@
-﻿namespace Freelancer.Models
+﻿using Microsoft.AspNetCore.Identity;
+
+namespace Freelancer.Models
 {
-    public class User
+    public class User:IdentityUser
     {
-        public int Id { get; set; }
         public string? Name { get; set; }
-        public ICollection<Jobs>? Jobs { get; set; }
     }
 }

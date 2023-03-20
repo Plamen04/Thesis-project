@@ -1,4 +1,4 @@
-﻿using Freelancer.Data;
+using Freelancer.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -10,8 +10,6 @@ namespace Freelancer
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
-            builder.Services.AddDbContext<FreelancerContext>(options =>
-                options.UseSqlServer(builder.Configuration.GetConnectionString("FreelancerContext") ?? throw new InvalidOperationException("Connection string 'FreelancerContext' not found.")));
 
             // Add services to the container.
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
@@ -20,6 +18,7 @@ namespace Freelancer
             builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
             builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+                .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
             builder.Services.AddControllersWithViews();
 

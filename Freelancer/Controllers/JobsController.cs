@@ -7,14 +7,16 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Freelancer.Data;
 using Freelancer.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Freelancer.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class JobsController : Controller
     {
-        private readonly FreelancerContext _context;
+        private readonly ApplicationDbContext _context;
 
-        public JobsController(FreelancerContext context)
+        public JobsController(ApplicationDbContext context)
         {
             _context = context;
         }
@@ -22,7 +24,8 @@ namespace Freelancer.Controllers
         // GET: Jobs
         public async Task<IActionResult> Index()
         {
-              return View(await _context.Job.ToListAsync());
+            var applicationDbContext = _context.Job.Include(j => j.JobType);
+            return View(await applicationDbContext.ToListAsync());
         }
 
         // GET: Jobs/Details/5
@@ -34,6 +37,7 @@ namespace Freelancer.Controllers
             }
 
             var job = await _context.Job
+                .Include(j => j.JobType)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (job == null)
             {
@@ -46,6 +50,7 @@ namespace Freelancer.Controllers
         // GET: Jobs/Create
         public IActionResult Create()
         {
+            ViewData["JobTypeId"] = new SelectList(_context.jobTypes, "Id", "Name");
             return View();
         }
 
@@ -54,14 +59,16 @@ namespace Freelancer.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Title,Description,CreatedDate")] Job job)
+        public async Task<IActionResult> Create([Bind("Title,Description,JobTypeId,CreatedDate")] Job job)
         {
             if (ModelState.IsValid)
             {
+                job.CreatedDate = DateTime.Now;
                 _context.Add(job);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+            ViewData["JobTypeId"] = new SelectList(_context.jobTypes, "Id", "Name", job.JobTypeId);
             return View(job);
         }
 
@@ -78,6 +85,7 @@ namespace Freelancer.Controllers
             {
                 return NotFound();
             }
+            ViewData["JobTypeId"] = new SelectList(_context.jobTypes, "Id", "Id", job.JobTypeId);
             return View(job);
         }
 
@@ -86,7 +94,7 @@ namespace Freelancer.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Description,CreatedDate")] Job job)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Description,JobTypeId,CreatedDate")] Job job)
         {
             if (id != job.Id)
             {
@@ -113,6 +121,7 @@ namespace Freelancer.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
+            ViewData["JobTypeId"] = new SelectList(_context.jobTypes, "Id", "Id", job.JobTypeId);
             return View(job);
         }
 
@@ -125,6 +134,7 @@ namespace Freelancer.Controllers
             }
 
             var job = await _context.Job
+                .Include(j => j.JobType)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (job == null)
             {
@@ -141,7 +151,7 @@ namespace Freelancer.Controllers
         {
             if (_context.Job == null)
             {
-                return Problem("Entity set 'FreelancerContext.Job'  is null.");
+                return Problem("Entity set 'ApplicationDbContext.Job'  is null.");
             }
             var job = await _context.Job.FindAsync(id);
             if (job != null)

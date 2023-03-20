@@ -7,88 +7,91 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Freelancer.Data;
 using Freelancer.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Freelancer.Controllers
 {
-    public class UsersController : Controller
+    [Authorize(Roles = "Admin")]
+    public class JobTypesController : Controller
     {
         private readonly ApplicationDbContext _context;
 
-        public UsersController(ApplicationDbContext context)
+        public JobTypesController(ApplicationDbContext context)
         {
             _context = context;
         }
 
-        // GET: Users
+        // GET: JobTypes
         public async Task<IActionResult> Index()
         {
-              return View(await _context.User.ToListAsync());
+              return View(await _context.jobTypes.ToListAsync());
         }
 
-        // GET: Users/Details/5
+        // GET: JobTypes/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null || _context.User == null)
+            if (id == null || _context.jobTypes == null)
             {
                 return NotFound();
             }
 
-            var user = await _context.User
+            var jobType = await _context.jobTypes
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (user == null)
+            if (jobType == null)
             {
                 return NotFound();
             }
 
-            return View(user);
+            return View(jobType);
         }
 
-        // GET: Users/Create
+        // GET: JobTypes/Create
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: Users/Create
+        // POST: JobTypes/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name")] User user)
+        public async Task<IActionResult> Create([Bind("Id,Name,CreatedDate")] JobType jobType)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(user);
+                jobType.CreatedDate = DateTime.Now;
+                _context.Add(jobType);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(user);
+            return View(jobType);
         }
 
-        // GET: Users/Edit/5
+        // GET: JobTypes/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null || _context.User == null)
+            if (id == null || _context.jobTypes == null)
             {
                 return NotFound();
             }
 
-            var user = await _context.User.FindAsync(id);
-            if (user == null)
+            var jobType = await _context.jobTypes.FindAsync(id);
+            if (jobType == null)
             {
                 return NotFound();
             }
-            return View(user);
+            return View(jobType);
         }
 
-        // POST: Users/Edit/5
+        // POST: JobTypes/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name")] User user)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,CreatedDate")] JobType jobType)
         {
-            if (id != user.Id)
+            if (id != jobType.Id)
             {
                 return NotFound();
             }
@@ -97,12 +100,12 @@ namespace Freelancer.Controllers
             {
                 try
                 {
-                    _context.Update(user);
+                    _context.Update(jobType);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!UserExists(user.Id))
+                    if (!JobTypeExists(jobType.Id))
                     {
                         return NotFound();
                     }
@@ -113,49 +116,49 @@ namespace Freelancer.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(user);
+            return View(jobType);
         }
 
-        // GET: Users/Delete/5
+        // GET: JobTypes/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null || _context.User == null)
+            if (id == null || _context.jobTypes == null)
             {
                 return NotFound();
             }
 
-            var user = await _context.User
+            var jobType = await _context.jobTypes
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (user == null)
+            if (jobType == null)
             {
                 return NotFound();
             }
 
-            return View(user);
+            return View(jobType);
         }
 
-        // POST: Users/Delete/5
+        // POST: JobTypes/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            if (_context.User == null)
+            if (_context.jobTypes == null)
             {
-                return Problem("Entity set 'ApplicationDbContext.User'  is null.");
+                return Problem("Entity set 'ApplicationDbContext.jobTypes'  is null.");
             }
-            var user = await _context.User.FindAsync(id);
-            if (user != null)
+            var jobType = await _context.jobTypes.FindAsync(id);
+            if (jobType != null)
             {
-                _context.User.Remove(user);
+                _context.jobTypes.Remove(jobType);
             }
             
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool UserExists(int id)
+        private bool JobTypeExists(int id)
         {
-          return _context.User.Any(e => e.Id == id);
+          return _context.jobTypes.Any(e => e.Id == id);
         }
     }
 }

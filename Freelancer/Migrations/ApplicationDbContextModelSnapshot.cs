@@ -4,27 +4,25 @@ using Freelancer.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace Freelancer.Data.Migrations
+namespace Freelancer.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20221215073347_InitialCreate")]
-    partial class InitialCreate
+    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
     {
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "6.0.12")
+                .HasAnnotation("ProductVersion", "6.0.14")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
-            modelBuilder.Entity("Freelancer.Models.Jobs", b =>
+            modelBuilder.Entity("Freelancer.Models.Job", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -32,23 +30,26 @@ namespace Freelancer.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
-                    b.Property<string>("Name")
+                    b.Property<DateTime?>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<decimal>("Price")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<int?>("UserId")
+                    b.Property<int>("JobTypeId")
                         .HasColumnType("int");
+
+                    b.Property<string>("Title")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("JobTypeId");
 
                     b.ToTable("Job");
                 });
 
-            modelBuilder.Entity("Freelancer.Models.User", b =>
+            modelBuilder.Entity("Freelancer.Models.JobType", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -56,12 +57,15 @@ namespace Freelancer.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
+                    b.Property<DateTime?>("CreatedDate")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
-                    b.ToTable("User");
+                    b.ToTable("jobTypes");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -266,11 +270,15 @@ namespace Freelancer.Data.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("Freelancer.Models.Jobs", b =>
+            modelBuilder.Entity("Freelancer.Models.Job", b =>
                 {
-                    b.HasOne("Freelancer.Models.User", null)
+                    b.HasOne("Freelancer.Models.JobType", "JobType")
                         .WithMany("Jobs")
-                        .HasForeignKey("UserId");
+                        .HasForeignKey("JobTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("JobType");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -324,7 +332,7 @@ namespace Freelancer.Data.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Freelancer.Models.User", b =>
+            modelBuilder.Entity("Freelancer.Models.JobType", b =>
                 {
                     b.Navigation("Jobs");
                 });
