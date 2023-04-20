@@ -46,17 +46,12 @@ namespace Freelancer.Controllers
 
             return View(job);
         }
-
-        // GET: Jobs/Create
         public IActionResult Create()
         {
             ViewData["JobTypeId"] = new SelectList(_context.jobTypes, "Id", "Name");
             return View();
         }
 
-        // POST: Jobs/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Title,Description,JobTypeId,CreatedDate")] Job job)
@@ -85,13 +80,10 @@ namespace Freelancer.Controllers
             {
                 return NotFound();
             }
-            ViewData["JobTypeId"] = new SelectList(_context.jobTypes, "Id", "Id", job.JobTypeId);
+            ViewData["JobTypeId"] = new SelectList(_context.jobTypes, "Id", "Name", job.JobTypeId);
             return View(job);
         }
 
-        // POST: Jobs/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Description,JobTypeId,CreatedDate")] Job job)
@@ -105,6 +97,7 @@ namespace Freelancer.Controllers
             {
                 try
                 {
+                    job.CreatedDate = DateTime.Now;
                     _context.Update(job);
                     await _context.SaveChangesAsync();
                 }
@@ -121,7 +114,7 @@ namespace Freelancer.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["JobTypeId"] = new SelectList(_context.jobTypes, "Id", "Id", job.JobTypeId);
+            ViewData["JobTypeId"] = new SelectList(_context.jobTypes, "Id", "Name", job.JobTypeId);
             return View(job);
         }
 

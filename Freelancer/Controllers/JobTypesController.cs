@@ -100,6 +100,7 @@ namespace Freelancer.Controllers
             {
                 try
                 {
+                    jobType.CreatedDate = DateTime.Now;
                     _context.Update(jobType);
                     await _context.SaveChangesAsync();
                 }

@@ -1,7 +1,7 @@
-﻿@model Freelancer.Models.Job
+﻿@model Freelancer.Models.Order
 
 @{
-    ViewData["Title"] = "Delete";
+    ViewData["Title"] = "Accept";
 }
 
 <h1>Accept</h1>
@@ -11,27 +11,21 @@
     <h4>Job</h4>
     <hr />
     <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Title)
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Jobs)
         </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Title)
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Jobs.Title)
         </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Description)
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Users)
         </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Description)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.CreatedDate)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.CreatedDate)
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Users.UserName)
         </dd>
     </dl>
 
-    <form asp-action="Delete">
+    <form asp-action="Accept">
         <input type="hidden" asp-for="Id" />
         <input type="submit" value="Accept" class="btn btn-success" /> |
         <a asp-action="Index">Back to List</a>

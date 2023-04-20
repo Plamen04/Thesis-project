@@ -1,10 +1,10 @@
-﻿@model IEnumerable<Freelancer.Models.User>
+﻿@model IEnumerable<Freelancer.Models.Order>
 
 @{
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
+<h1>Orders</h1>
 
 <p>
     <a asp-action="Create">Create New</a>
@@ -13,7 +13,13 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Name)
+                @Html.DisplayNameFor(model => model.Jobs.Title)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Users.UserName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.IsApproved)
             </th>
             <th></th>
         </tr>
@@ -22,7 +28,13 @@
 @foreach (var item in Model) {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.Name)
+                @Html.DisplayFor(modelItem => item.Jobs.Title)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Users.UserName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.IsApproved)
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |

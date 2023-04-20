@@ -10,5 +10,6 @@ namespace Freelancer.Models
         public int JobTypeId { get; set; }
         public JobType? JobType { get; set; }
         public DateTime? CreatedDate { get; set; }
+        public ICollection<Order>? Orders { get; set; }
     }
 }
