@@ -7,42 +7,25 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Freelancer.Data;
 using Freelancer.Models;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.CodeAnalysis;
-using System.Diagnostics.Metrics;
 
 namespace Freelancer.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "Admin")]
     public class OrdersController : Controller
     {
         private readonly ApplicationDbContext _context;
-        private readonly UserManager<User> _userManager;
 
-        public OrdersController(ApplicationDbContext context, UserManager<User> userManager)
+        public OrdersController(ApplicationDbContext context)
         {
             _context = context;
-            _userManager = userManager;
         }
 
         // GET: Orders
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string sortOrder, string searchString, int? pageNumer, string currentFilter)
         {
-            if (User.IsInRole("Admin"))
-            {
-                var applicationDbContext = _context.orders.Include(o => o.Users).Include(o => o.Jobs);
-                return View(await applicationDbContext.ToListAsync());
-            }
-            else
-            {
-                var applicationDbContext = _context.orders
-                    .Include(o => o.Users)
-                    .Include(o => o.Jobs)
-                    .Where(x => x.UserId == _userManager.GetUserId(User));
-                return View(await applicationDbContext.ToListAsync());
-            }
-            
+            var applicationDbContext = _context.orders.Include(o => o.Users).Include(o => o.Jobs);
+            return View(await applicationDbContext.ToListAsync());
         }
 
         // GET: Orders/Details/5
@@ -54,8 +37,8 @@ namespace Freelancer.Controllers
             }
 
             var order = await _context.orders
-                .Include(o => o.Users)
                 .Include(o => o.Jobs)
+                .Include(o => o.Users)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (order == null)
             {
@@ -66,14 +49,30 @@ namespace Freelancer.Controllers
         }
 
         // GET: Orders/Create
-        
+        public IActionResult Create()
+        {
+            ViewData["JobId"] = new SelectList(_context.Job, "Id", "Title");
+            ViewData["UserId"] = new SelectList(_context.Users, "Id", "UserName");
+            return View();
+        }
 
         // POST: Orders/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        
-        
-        
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create([Bind("Id,JobId,UserId,IsApproved")] Order order)
+        {
+            if (ModelState.IsValid)
+            {
+                _context.Add(order);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
+            }
+            ViewData["JobId"] = new SelectList(_context.Job, "Id", "Title", order.JobId);
+            ViewData["UserId"] = new SelectList(_context.Users, "Id", "UserName", order.UserId);
+            return View(order);
+        }
 
         // GET: Orders/Edit/5
         public async Task<IActionResult> Edit(int? id)
@@ -88,14 +87,11 @@ namespace Freelancer.Controllers
             {
                 return NotFound();
             }
-            ViewData["UserId"] = new SelectList(_context.Users, "Id", "UserName", order.UserId);
             ViewData["JobId"] = new SelectList(_context.Job, "Id", "Title", order.JobId);
+            ViewData["UserId"] = new SelectList(_context.Users, "Id", "UserName", order.UserId);
             return View(order);
         }
 
-        // POST: Orders/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,JobId,UserId,IsApproved")] Order order)
@@ -125,8 +121,8 @@ namespace Freelancer.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["UserId"] = new SelectList(_context.Users, "Id", "UserName", order.UserId);
             ViewData["JobId"] = new SelectList(_context.Job, "Id", "Title", order.JobId);
+            ViewData["UserId"] = new SelectList(_context.Users, "Id", "UserName", order.UserId);
             return View(order);
         }
 
@@ -139,8 +135,8 @@ namespace Freelancer.Controllers
             }
 
             var order = await _context.orders
-                .Include(o => o.Users)
                 .Include(o => o.Jobs)
+                .Include(o => o.Users)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (order == null)
             {

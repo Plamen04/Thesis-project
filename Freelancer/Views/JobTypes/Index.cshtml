@@ -1,22 +1,32 @@
-﻿@model IEnumerable<Freelancer.Models.JobType>
+﻿@using Freelancer.Data;
+@model PaginatedList<Freelancer.Models.JobType>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Тип на обявите";
 }
 
-<h1>Types of jobs</h1>
+<h1>Тип на обявата</h1>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-action="Create" class="btn btn-primary">Създай нов</a>
 </p>
+<form asp-action="Index" method="get">
+    <div class="form-check">
+        <p>
+            Намери по име: <input type="text" name="searchString" value="@ViewData["CurrentFilter"]" />
+            <input type="submit" value="Търси" class="btn btn-sm" /> |
+            <a asp-action="Index" class="btn btn-secondary">Обратно към листа</a>
+        </p>
+    </div>
+</form>
 <table class="table">
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Name)
+                <a asp-action="Index" asp-route-sortOrder="@ViewData["NameSortParm"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">Име</a>
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.CreatedDate)
+                <a asp-action="Index" asp-route-sortOrder="@ViewData["DateSortParm"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">Дата на създаване</a>
             </th>
             <th></th>
         </tr>
@@ -31,11 +41,13 @@
                 @Html.DisplayFor(modelItem => item.CreatedDate)
             </td>
             <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm">Редактиране</a> |
+                <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm">Детайли</a> |
+                <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm">Изтриване</a>
             </td>
         </tr>
 }
     </tbody>
 </table>
+
+

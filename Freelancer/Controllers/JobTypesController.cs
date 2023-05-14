@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Freelancer.Data;
 using Freelancer.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.Data.SqlClient;
 
 namespace Freelancer.Controllers
 {
@@ -21,10 +22,39 @@ namespace Freelancer.Controllers
             _context = context;
         }
 
-        // GET: JobTypes
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string sortOrder, string searchString, int? pageNumer, string currentFilter)
         {
-              return View(await _context.jobTypes.ToListAsync());
+            ViewData["CurrentSort"] = sortOrder;
+            ViewData["NameSortParm"] = string.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
+            ViewData["DateSortParm"] = sortOrder == "Date" ? "date_desc" : "Date";
+            if (searchString != null)
+            {
+                pageNumer = 1;
+            }
+            else searchString = currentFilter;
+            ViewData["CurrentFilter"] = searchString;
+            var jobs = from j in _context.jobTypes select j;
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                jobs = jobs.Where(j => j.Name.Contains(searchString));
+            }
+            switch (sortOrder)
+            {
+                case "name_desc":
+                    jobs = jobs.OrderBy(j => j.Name);
+                    break;
+                case "Date":
+                    jobs = jobs.OrderBy(j => j.CreatedDate);
+                    break;
+                case "date_desc":
+                    jobs = jobs.OrderByDescending(j => j.CreatedDate);
+                    break;
+                default:
+                    jobs = jobs.OrderByDescending(j => j.Name);
+                    break;
+            }
+            int pageSize = 20;
+            return View(await PaginatedList<JobType>.CreateAsync(jobs.AsNoTracking(), pageNumer ?? 1, pageSize));
         }
 
         // GET: JobTypes/Details/5

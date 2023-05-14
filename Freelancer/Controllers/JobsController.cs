@@ -21,14 +21,41 @@ namespace Freelancer.Controllers
             _context = context;
         }
 
-        // GET: Jobs
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string sortOrder, string searchString, int? pageNumer, string currentFilter)
         {
-            var applicationDbContext = _context.Job.Include(j => j.JobType);
-            return View(await applicationDbContext.ToListAsync());
+            ViewData["CurrentSort"] = sortOrder;
+            ViewData["NameSortParm"] = string.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
+            ViewData["DateSortParm"] = sortOrder == "Date" ? "date_desc" : "Date";
+            if (searchString != null)
+            {
+                pageNumer = 1;
+            }
+            else searchString = currentFilter;
+            ViewData["CurrentFilter"] = searchString;
+            var jobs = from j in _context.Job.Include(j => j.JobType) select j;
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                jobs = jobs.Where(j => j.Title.Contains(searchString));
+            }
+            switch (sortOrder)
+            {
+                case "name_desc":
+                    jobs = jobs.OrderBy(j => j.Title);
+                    break;
+                case "Date":
+                    jobs = jobs.OrderBy(j => j.CreatedDate);
+                    break;
+                case "date_desc":
+                    jobs = jobs.OrderByDescending(j => j.CreatedDate);
+                    break;
+                default:
+                    jobs = jobs.OrderByDescending(j => j.Title);
+                    break;
+            }
+            int pageSize = 20;
+            return View(await PaginatedList<Job>.CreateAsync(jobs.AsNoTracking(), pageNumer ?? 1, pageSize));
         }
 
-        // GET: Jobs/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null || _context.Job == null)
@@ -67,7 +94,6 @@ namespace Freelancer.Controllers
             return View(job);
         }
 
-        // GET: Jobs/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null || _context.Job == null)

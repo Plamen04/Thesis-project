@@ -1,25 +1,25 @@
 ﻿@model IEnumerable<Freelancer.Models.Order>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Заявки за обяви";
 }
 
-<h1>Orders</h1>
+<h1>Заявки на обяви</h1>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-action="Create" class="btn btn-primary">Създай нов</a>
 </p>
 <table class="table">
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Jobs.Title)
+                <a asp-action="Index" asp-route-sortOrder="@ViewData["NameSortParm"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">Обява</a>
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Users.UserName)
+                Потребител
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.IsApproved)
+                Приета
             </th>
             <th></th>
         </tr>
@@ -37,9 +37,9 @@
                 @Html.DisplayFor(modelItem => item.IsApproved)
             </td>
             <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm">Редактиране</a> |
+                <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm">Детайли</a> |
+                <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm">Изтриване</a>
             </td>
         </tr>
 }
